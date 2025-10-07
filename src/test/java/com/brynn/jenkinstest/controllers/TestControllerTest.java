@@ -33,6 +33,28 @@ public class TestControllerTest {
     }
 
     @Test
+    public void testGetUserById_NegativeId() throws Exception {
+        mockMvc.perform(get("/api/users/-1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(-1)))
+                .andExpect(jsonPath("$.name", is("User -1")))
+                .andExpect(jsonPath("$.email", is("user-1@example.com")));
+    }
+
+    @Test
+    public void testGetUserById_ZeroId() throws Exception {
+        mockMvc.perform(get("/api/users/0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(0)));
+    }
+
+    @Test
+    public void testGetUserById_InvalidIdFormat() throws Exception {
+        mockMvc.perform(get("/api/users/abc"))
+                .andExpect(status().isBadRequest()); // Spring will return 400
+    }
+
+    @Test
     public void testGetStatus() throws Exception {
         mockMvc.perform(get("/api/users/status"))
                 .andExpect(status().isOk())
