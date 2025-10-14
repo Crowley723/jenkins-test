@@ -23,7 +23,7 @@ public class TestController {
         user.put("id", id);
         user.put("name", "User " + id);
         user.put("email", "user" + id + "@example.com");
-	user.put("group", "admin");
+	user.put("groups", "admin");
         return user;
     }
 

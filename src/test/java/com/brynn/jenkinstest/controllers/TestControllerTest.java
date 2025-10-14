@@ -30,7 +30,7 @@ public class TestControllerTest {
                 .andExpect(jsonPath("$.id", is(5)))
                 .andExpect(jsonPath("$.name", is("User 5")))
                 .andExpect(jsonPath("$.email", is("user5@example.com")))
-		.andExpect(jsonPath("$.group", is("admin")));
+		        .andExpect(jsonPath("$.groups", is("admin")));
     }
 
     @Test
