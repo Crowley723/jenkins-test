@@ -1,6 +1,6 @@
 pipeline {
     agent {
-	label 'k8s maven'
+	label 'k8s-maven'
     }
 
     stages {
