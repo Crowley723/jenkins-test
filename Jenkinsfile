@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'moor-jenkins-1'
+	label 'k8s maven'
     }
 
     stages {

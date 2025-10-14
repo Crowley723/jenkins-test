@@ -29,7 +29,8 @@ public class TestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(5)))
                 .andExpect(jsonPath("$.name", is("User 5")))
-                .andExpect(jsonPath("$.email", is("user5@example.com")));
+                .andExpect(jsonPath("$.email", is("user5@example.com")))
+		        .andExpect(jsonPath("$.groups", is("admin")));
     }
 
     @Test
