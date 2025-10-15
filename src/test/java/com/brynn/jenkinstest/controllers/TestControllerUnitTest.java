@@ -28,7 +28,7 @@ import static org.hamcrest.Matchers.*;
                 DataSourceTransactionManagerAutoConfiguration.class,
                 HibernateJpaAutoConfiguration.class
         })
-public class TestControllerTest {
+public class TestControllerUnitTest {
 
     @Autowired
     private MockMvc mockMvc;
