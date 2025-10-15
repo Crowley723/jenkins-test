@@ -4,6 +4,9 @@ import com.brynn.jenkinstest.model.Customer;
 import com.brynn.jenkinstest.repositories.CustomerRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -19,7 +22,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
 
-@WebMvcTest(TestController.class)
+@WebMvcTest(controllers = TestController.class,
+        excludeAutoConfiguration = {
+                DataSourceAutoConfiguration.class,
+                DataSourceTransactionManagerAutoConfiguration.class,
+                HibernateJpaAutoConfiguration.class
+        })
 public class TestControllerTest {
 
     @Autowired
