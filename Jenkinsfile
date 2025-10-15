@@ -37,6 +37,18 @@ pipeline {
         always {
             junit '**/target/surefire-reports/*.xml'
             archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+
+            step([
+                $class: 'GitHubCommitStatusSetter',
+                contextSource: [
+                    $class: 'ManuallyEnteredCommitContextSource',
+                    context: 'jenkins/linting-and-unit-tests'
+                ],
+                statusResultSource: [
+                    $class: 'ConditionalStatusResultSource',
+                    results: []
+                ]
+            ])
         }
         success {
             echo 'Pipeline succeeded! ✓'
