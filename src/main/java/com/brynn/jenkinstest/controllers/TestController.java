@@ -1,30 +1,54 @@
 package com.brynn.jenkinstest.controllers;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.brynn.jenkinstest.model.Customer;
+import com.brynn.jenkinstest.repositories.CustomerRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class TestController {
+    private final CustomerRepository customerRepository;
+
+    public TestController(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
+
+    @PostMapping("/customer")
+    public ResponseEntity CreateNewCustomer(@RequestBody Customer customer){
+        if (customer.getFirstName() == null || customer.getLastName() == null){
+            return ResponseEntity.badRequest().build();
+        }
+        Customer savedCustomer = customerRepository.save(customer);
+        return ResponseEntity.ok(savedCustomer);
+    }
+
+    @GetMapping("/customer")
+    public List<Customer> GetAllCustomers(){
+        return customerRepository.findAll();
+    }
+
+    @GetMapping("/customer/{name}")
+    public ResponseEntity<Object> GetCustomer(@PathVariable("name") String name) {
+        List<Customer> customers = customerRepository.findByFirstName(name);
+
+        if (customers.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
+        }
+
+        return ResponseEntity.ok(customers);
+    }
+
 
     @GetMapping("/hello")
     public String hello() {
         return "Hello World";
-    }
-
-    @GetMapping("/{id}")
-    public Map<String, Object> test(@PathVariable Long id) {
-        Map<String, Object> user = new HashMap<>();
-        user.put("id", id);
-        user.put("name", "User " + id);
-        user.put("email", "user" + id + "@example.com");
-	user.put("groups", "admin");
-        return user;
     }
 
     @GetMapping("/status")
