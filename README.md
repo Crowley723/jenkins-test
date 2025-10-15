@@ -13,4 +13,6 @@ This project is designed to help understand how to:
 ## Project Structure
 
 - `Jenkinsfile` - Jenkins pipeline configuration
+- `Jenkinsfile.integration` - Jenkins integration testing pipeline
+- `Jenkinsfile.docker` - Jenkins docker build pipeline
 - Additional test files for experimenting with builds
