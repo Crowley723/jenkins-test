@@ -21,7 +21,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                setBuildStatus("Build in progress", "PENDING")
+                setBuildStatus("Build in progress", "IN_PROGRESS")
                 echo 'Checking out code...'
                 checkout scm
             }
