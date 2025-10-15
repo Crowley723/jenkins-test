@@ -1,4 +1,6 @@
 # Jenkins Test Project
+[![codecov](https://codecov.io/gh/Crowley723/jenkins-test/branch/main/graph/badge.svg?token=7VABBZSUH2)](https://codecov.io/gh/Crowley723/jenkins-test)
+[![Build Status](https://jenkins.crowleybrynn.com/buildStatus/icon?job=Jenkins+Test%2Fmain)](https://jenkins.crowleybrynn.com/job/Jenkins%20Test/job/main/)
 
 A simple project for learning and experimenting with Jenkins CI/CD pipelines.
 
