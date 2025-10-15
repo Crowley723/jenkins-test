@@ -1,3 +1,18 @@
+void setBuildStatus(String message, String state) {
+    step([
+        $class: 'GitHubCommitStatusSetter',
+        repoSource: [$class: "ManuallyEnteredRepositorySource", url: env.GIT_URL],
+        contextSource: [
+            $class: 'ManuallyEnteredCommitContextSource',
+            context: 'ci/jenkins/linting-and-unit-tests'
+        ],
+        statusResultSource: [
+            $class: 'ConditionalStatusResultSource',
+            results: [[$class: "AnyBuildResult", message: message, state: state]]
+        ]
+    ])
+}
+
 pipeline {
     agent {
 	label 'k8s-maven'
@@ -6,6 +21,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                setBuildStatus("Build in progress", "PENDING")
                 echo 'Checking out code...'
                 checkout scm
             }
@@ -37,24 +53,14 @@ pipeline {
         always {
             junit '**/target/surefire-reports/*.xml'
             archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
-
-            step([
-                $class: 'GitHubCommitStatusSetter',
-                contextSource: [
-                    $class: 'ManuallyEnteredCommitContextSource',
-                    context: 'jenkins/linting-and-unit-tests'
-                ],
-                statusResultSource: [
-                    $class: 'ConditionalStatusResultSource',
-                    results: []
-                ]
-            ])
         }
         success {
             echo 'Pipeline succeeded! ✓'
+            setBuildStatus("Build succeeded", "SUCCESS");
         }
         failure {
             echo 'Pipeline failed! ✗'
+            setBuildStatus("Build failed", "FAILURE");
         }
     }
 }
