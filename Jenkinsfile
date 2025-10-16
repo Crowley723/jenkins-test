@@ -1,7 +1,6 @@
 void setBuildStatus(String message, String state) {
     step([
         $class: 'GitHubCommitStatusSetter',
-        repoSource: [$class: "ManuallyEnteredRepositorySource", url: env.GIT_URL],
         contextSource: [
             $class: 'ManuallyEnteredCommitContextSource',
             context: 'ci/jenkins/linting-and-unit-tests'
@@ -15,13 +14,13 @@ void setBuildStatus(String message, String state) {
 
 pipeline {
     agent {
-	label 'k8s-maven'
+	    label 'k8s-maven'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                setBuildStatus("Build in progress", "PENDING")
+                setBuildStatus("Unit testing in progress", "PENDING")
                 echo 'Checking out code...'
                 checkout scm
             }
@@ -56,11 +55,11 @@ pipeline {
         }
         success {
             echo 'Pipeline succeeded! ✓'
-            setBuildStatus("Build succeeded", "SUCCESS");
+            setBuildStatus("Unit tests succeeded", "SUCCESS");
         }
         failure {
             echo 'Pipeline failed! ✗'
-            setBuildStatus("Build failed", "FAILURE");
+            setBuildStatus("Unit tests failed", "FAILURE");
         }
     }
 }

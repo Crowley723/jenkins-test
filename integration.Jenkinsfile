@@ -1,10 +1,9 @@
 void setBuildStatus(String message, String state) {
     step([
         $class: 'GitHubCommitStatusSetter',
-        repoSource: [$class: "ManuallyEnteredRepositorySource", url: env.GIT_URL],
         contextSource: [
             $class: 'ManuallyEnteredCommitContextSource',
-            context: 'ci/jenkins/integration-tests'
+            context: 'ci/jenkins/linting-and-unit-tests'
         ],
         statusResultSource: [
             $class: 'ConditionalStatusResultSource',
