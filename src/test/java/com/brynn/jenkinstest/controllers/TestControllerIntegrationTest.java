@@ -39,6 +39,7 @@ public class TestControllerIntegrationTest {
     public void testCreateNewCustomer_Success() throws Exception {
         String customerJson = "{\"firstName\":\"John\",\"lastName\":\"Doe\"}";
 
+
         mockMvc.perform(post("/api/customer")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(customerJson))
