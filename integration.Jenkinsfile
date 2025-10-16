@@ -1,17 +1,3 @@
-void setBuildStatus(String message, String state) {
-    step([
-        $class: 'GitHubCommitStatusSetter',
-        contextSource: [
-            $class: 'ManuallyEnteredCommitContextSource',
-            context: 'ci/jenkins/linting-and-unit-tests'
-        ],
-        statusResultSource: [
-            $class: 'ConditionalStatusResultSource',
-            results: [[$class: "AnyBuildResult", message: message, state: state]]
-        ]
-    ])
-}
-
 pipeline {
     agent {
         label 'k8s-maven-integration'
@@ -20,7 +6,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                setBuildStatus("Integration tests in progress", "PENDING")
                 echo 'Checking out code...'
                 checkout scm
             }
@@ -81,11 +66,9 @@ pipeline {
         }
         success {
             echo 'Integration tests succeeded! ✓'
-            setBuildStatus("Integration tests succeeded", "SUCCESS")
         }
         failure {
             echo 'Integration tests failed! ✗'
-            setBuildStatus("Integration tests failed", "FAILURE")
         }
     }
 }

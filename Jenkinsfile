@@ -1,17 +1,3 @@
-void setBuildStatus(String message, String state) {
-    step([
-        $class: 'GitHubCommitStatusSetter',
-        contextSource: [
-            $class: 'ManuallyEnteredCommitContextSource',
-            context: 'ci/jenkins/linting-and-unit-tests'
-        ],
-        statusResultSource: [
-            $class: 'ConditionalStatusResultSource',
-            results: [[$class: "AnyBuildResult", message: message, state: state]]
-        ]
-    ])
-}
-
 pipeline {
     agent {
 	    label 'k8s-maven'
@@ -20,8 +6,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                //setBuildStatus("Unit testing in progress", "PENDING")
-                //publishChecks conclusion: 'NEUTRAL', name: 'ci/jenkins/linting-and-unit-testing', status: 'IN_PROGRESS', summary: 'Unit tests starting...', title: 'Unit Tests'
                 echo 'Checking out code...'
                 checkout scm
             }
@@ -55,14 +39,10 @@ pipeline {
             archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
         }
         success {
-            echo 'Pipeline succeeded! ✓'
-            //setBuildStatus("Unit tests succeeded", "SUCCESS");
-            //publishChecks name: 'ci/jenkins/linting-and-unit-testing', title: 'Unit Tests', conclusion: SUCCESS, summary: 'All unit tests passed successfully', detailsURL: env.BUILD_URL
+            echo 'Linting and Unit Tests Succeeded! ✓'
         }
         failure {
-            echo 'Pipeline failed! ✗'
-            //setBuildStatus("Unit tests failed", "FAILURE");
-            //publishChecks name: 'ci/jenkins/linting-and-unit-testing', title: 'Unit Tests', conclusion: FAILURE summary: 'Unit tests failed - check logs for details', detailsURL: env.BUILD_URL
+            echo 'Linting and Unit Tests Failed! ✗'
         }
     }
 }
