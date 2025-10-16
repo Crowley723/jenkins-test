@@ -20,7 +20,12 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                setBuildStatus("Unit testing in progress", "PENDING")
+                //setBuildStatus("Unit testing in progress", "PENDING")
+                publishChecks conclusion: 'NEUTRAL',
+                                 name: 'ci/jenkins/linting-and-unit-testing',
+                                 status: 'IN_PROGRESS',
+                                 summary: 'Unit tests starting...',
+                                 title: 'Unit Tests'
                 echo 'Checking out code...'
                 checkout scm
             }
@@ -55,11 +60,21 @@ pipeline {
         }
         success {
             echo 'Pipeline succeeded! ✓'
-            setBuildStatus("Unit tests succeeded", "SUCCESS");
+            //setBuildStatus("Unit tests succeeded", "SUCCESS");
+            publishChecks name: 'ci/jenkins/linting-and-unit-testing',
+                                 title: 'Unit Tests',
+                                 conclusion: SUCCESS
+                                 summary: 'All unit tests passed successfully',
+                                 detailsURL: env.BUILD_URL
         }
         failure {
             echo 'Pipeline failed! ✗'
-            setBuildStatus("Unit tests failed", "FAILURE");
+            //setBuildStatus("Unit tests failed", "FAILURE");
+            publishChecks name: 'ci/jenkins/linting-and-unit-testing',
+                                 title: 'Unit Tests',
+                                 conclusion: FAILURE
+                                 summary: 'Unit tests failed - check logs for details',
+                                 detailsURL: env.BUILD_URL
         }
     }
 }
