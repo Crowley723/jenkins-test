@@ -7,8 +7,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,7 +14,7 @@ import static org.springframework.test.util.AssertionErrors.fail;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class JenkinsTestApplicationTests {
+class JenkinsTestInfrastructureIntegrationTest {
 
 	@Autowired
 	private DataSource dataSource;
