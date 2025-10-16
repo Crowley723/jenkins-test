@@ -1,0 +1,91 @@
+void setBuildStatus(String message, String state) {
+    step([
+        $class: 'GitHubCommitStatusSetter',
+        contextSource: [
+            $class: 'ManuallyEnteredCommitContextSource',
+            context: 'ci/jenkins/linting-and-unit-tests'
+        ],
+        statusResultSource: [
+            $class: 'ConditionalStatusResultSource',
+            results: [[$class: "AnyBuildResult", message: message, state: state]]
+        ]
+    ])
+}
+
+pipeline {
+    agent {
+        label 'k8s-maven-integration'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                setBuildStatus("Integration tests in progress", "PENDING")
+                echo 'Checking out code...'
+                checkout scm
+            }
+        }
+
+        stage('Wait for PostgreSQL') {
+            steps {
+                container('postgres') {
+                    echo 'Waiting for PostgreSQL to be ready...'
+                    sh '''
+                        for i in $(seq 1 30); do
+                            if pg_isready -h localhost -p 5432 -U testuser; then
+                                echo "PostgreSQL is ready!"
+                                exit 0
+                            fi
+                            echo "Waiting for PostgreSQL... ($i/30)"
+                            sleep 2
+                        done
+                        echo "PostgreSQL failed to start!"
+                        exit 1
+                    '''
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                container('maven') {
+                    echo 'Building the project...'
+                    sh 'mvn clean compile'
+                }
+            }
+        }
+
+        stage('Integration Tests') {
+            steps {
+                container('maven') {
+                    echo 'Running integration tests against PostgreSQL...'
+                    sh 'mvn test -Dtest="*IntegrationTest" -Dspring.profiles.active=test'
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                container('maven') {
+                    echo 'Packaging the application...'
+                    sh 'mvn package -DskipTests'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            junit '**/target/surefire-reports/*.xml'
+            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+        }
+        success {
+            echo 'Integration tests succeeded! ✓'
+            setBuildStatus("Integration tests succeeded", "SUCCESS")
+        }
+        failure {
+            echo 'Integration tests failed! ✗'
+            setBuildStatus("Integration tests failed", "FAILURE")
+        }
+    }
+}
