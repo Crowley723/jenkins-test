@@ -29,11 +29,11 @@ pipeline {
 
         stage('Wait for PostgreSQL') {
             steps {
-                container('maven') {
+                container('postgres') {
                     echo 'Waiting for PostgreSQL to be ready...'
                     sh '''
                         for i in $(seq 1 30); do
-                            if nc -z localhost 5432 2>/dev/null; then
+                            if pg_isready -h localhost -p 5432 -U testuser; then
                                 echo "PostgreSQL is ready!"
                                 exit 0
                             fi
