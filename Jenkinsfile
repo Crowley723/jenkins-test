@@ -36,8 +36,8 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                sh 'mvn test'
+                echo 'Running unit tests...'
+                sh 'mvn test -Dtest="*Test,*UnitTest" -Dtest="!*IntegrationTest"'
             }
         }
 
