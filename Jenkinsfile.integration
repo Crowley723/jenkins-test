@@ -56,15 +56,6 @@ pipeline {
             }
         }
 
-        stage('Unit Tests') {
-            steps {
-                container('maven') {
-                    echo 'Running unit tests...'
-                    sh 'mvn test -Dtest="*Test" -Dtest="!*IntegrationTest"'
-                }
-            }
-        }
-
         stage('Integration Tests') {
             steps {
                 container('maven') {

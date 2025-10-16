@@ -2,15 +2,14 @@ package com.brynn.jenkinstest.controllers;
 
 import com.brynn.jenkinstest.model.Customer;
 import com.brynn.jenkinstest.repositories.CustomerRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,19 +21,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
 
-@WebMvcTest(controllers = TestController.class,
-        excludeAutoConfiguration = {
-                DataSourceAutoConfiguration.class,
-                DataSourceTransactionManagerAutoConfiguration.class,
-                HibernateJpaAutoConfiguration.class
-        })
+@ExtendWith(MockitoExtension.class)
 public class TestControllerUnitTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private CustomerRepository customerRepository;
+
+    @BeforeEach
+    void setUp() {
+        TestController testController = new TestController(customerRepository);
+        mockMvc = MockMvcBuilders.standaloneSetup(testController).build();
+    }
 
     @Test
     public void testCreateNewCustomer_Success() throws Exception {
@@ -43,12 +42,9 @@ public class TestControllerUnitTest {
 
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
-        when(customerRepository.findByFirstName("John")).thenReturn(List.of(customer));
-
-
         mockMvc.perform(post("/api/customer")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"firstName\":\"John\",\"lastName\":\"Doe\"}"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"firstName\":\"John\",\"lastName\":\"Doe\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.firstName", is("John")))
@@ -95,8 +91,9 @@ public class TestControllerUnitTest {
 
     @Test
     public void testGetCustomer_NotFound() throws Exception {
-        when(customerRepository.findById(999L)).thenReturn(Optional.empty());
-        mockMvc.perform(get("/api/customer/John"))
+        when(customerRepository.findByFirstName("NonExistent")).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/customer/NonExistent"))
                 .andExpect(status().isNotFound());
     }
 

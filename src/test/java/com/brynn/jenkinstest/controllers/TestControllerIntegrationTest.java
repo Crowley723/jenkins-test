@@ -30,9 +30,6 @@ public class TestControllerIntegrationTest {
     @Autowired
     private CustomerRepository customerRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @BeforeEach
     public void setUp() {
         customerRepository.deleteAll();
